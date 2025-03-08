@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/data_structures" element={<DSAPage />} />
-        <Route path="/problems/:topic" element={<ProblemTemplate />} />
+        <Route path="/problems/:topic/:problemID" element={<ProblemTemplate />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

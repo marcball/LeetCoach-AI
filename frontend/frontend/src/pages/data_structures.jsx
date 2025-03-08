@@ -1,9 +1,14 @@
 import React from "react";
+import { Link } from "react-router-dom"
 
 export default function DSAPage() {
   // Data structure list with progress
   const dataStructures = [
-    { name: "Arrays", description: "Great for beginners", progress: 70, difficulty: "Easy" },
+    { name: "Arrays", description: "Great for beginners", progress: 70, difficulty: "Easy",
+      problems: [
+        { title: "Two Sum", link: "/problems/python/twosum" }
+      ]
+    },
     { name: "Linked Lists", description: "A bit more challenging", progress: 50, difficulty: "Easy" },
     { name: "Stacks", description: "Simple and useful", progress: 85, difficulty: "Medium" },
     { name: "Queues", description: "Easy to grasp", progress: 40, difficulty: "Medium" },
@@ -62,9 +67,17 @@ export default function DSAPage() {
                   </p>
                 </div>
 
-                {/* Placeholder for Problem List */}
-                <div className="mt-8 bg-gray-200 p-10 rounded-lg min-h-[350px] flex items-center justify-center">
-                  <p className="text-xl text-gray-700">Problem list goes here...</p>
+                {/* ✅ Problem List (Now Clickable) */}
+                <div className="mt-8 bg-gray-200 p-10 rounded-lg min-h-[150px] flex flex-col items-start">
+                  {ds.problems && ds.problems.length > 0 ? (
+                    ds.problems.map((problem, index) => (
+                      <Link key={index} to={problem.link} className="text-lg text-blue-500 hover:underline">
+                        {problem.title}
+                      </Link>
+                    ))
+                  ) : (
+                    <p className="text-xl text-gray-700">No problems yet...</p>
+                  )}
                 </div>
               </div>
             ))}

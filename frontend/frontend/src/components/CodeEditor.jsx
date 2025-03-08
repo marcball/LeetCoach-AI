@@ -2,40 +2,17 @@ import React, { useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import axios from "axios"; // Library for making API requests to our FastAPI backend.
+import AIButton from "./AIButton";
 
-const CodeEditor = ({ starterCode, onCodeChange }) => {
+const CodeEditor = ({ starterCode, onCodeChange, onRunCode, onSubmitCode, output, submitOutput }) => {
   const [code, setCode] = useState(starterCode); // Sets starting code (func name)
-  const [output, setOutput] = useState(""); // Stores output
 
-  const handleCodeChange = (newCode) => {
+  const handleLocalCodeChange = (newCode) => {
+    console.log("Updating Local Code State:", newCode); // Debug log
     setCode(newCode);
     onCodeChange(newCode);
-  };
-
-  /**
-   * Handles running the code
-   * - Sends user's py3 code to FastAPI backend.
-   * - Shows the output or errors.
-   */
-  const handleRunCode = async() => {
-    setOutput("Running...");
-    
-    try {
-      const response = await axios.post("http://localhost:8000/run", { code });
-      // Sends a POST request with the user's code to FastAPI backend.
-
-        if (response.data.error) {
-          setOutput(`Error:\n${response.data.error}`);
-        } else {
-          setOutput(response.data.output);
-        }
-      } catch (error) {
-          setOutput("Failed to run code.");
-      }
-    };
+  }
   
-
 return (
   <div className="w-full h-full flex flex-col bg-[#1E1E1E]">
     <CodeMirror // Code Editor
@@ -44,7 +21,7 @@ return (
       width = "100%"
       theme={vscodeDark}
       extensions={[python()]}
-      onChange={(value) => setCode(value)}
+      onChange={(value) => handleLocalCodeChange(value)}
       basicSetup={{
         lineNumbers: true,
         mode: "python",
@@ -57,24 +34,44 @@ return (
         backgroundColor: "#404040",
       }}
     />
-
-    {/* Run Button */}
-    <div className="p-2 bg-neutral-800 flex justify-between items-center">
-      <button
-        className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
-        onClick={handleRunCode} // RUNS CODE ON BUTTON CLICK.
-      >
-        Run Code
-      </button>
-    </div>
     
-    {/* Output Screen */}
-    {output && (
-      <div className="bg-neutral-900 text-white p-4 overflow-auto h-32">
-        <pre>{output}</pre> {/* Output is preformatted */}
+      {/* Buttons inside CodeEditor */}
+      <div className="p-2 bg-neutral-800 flex justify-between items-center">
+        <AIButton /> {/* AI Button on Left */}
+
+        <div className="flex space-x-2">
+          <button
+            className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded"
+            onClick={() => onRunCode(code)} 
+          >
+            Run
+          </button>
+
+          <button 
+            className="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded"
+            onClick={() => onSubmitCode(code)}
+          >
+            Submit
+          </button>
+        </div>
       </div>
-    )}
-  </div>
+    
+      {/* Run Output */}
+      {output && (
+        <div className="bg-neutral-900 text-white p-4 overflow-auto h-24 mt-2">
+          <h3 className="font-bold text-green-400">Run Output:</h3>
+          <pre>{output}</pre>
+        </div>
+      )}
+
+      {/* Submission Output */}
+      {submitOutput && (
+        <div className="bg-neutral-900 text-white p-4 overflow-auto h-32 mt-2">
+          <h3 className="font-bold text-purple-400">Submission Results:</h3>
+          <pre>{submitOutput}</pre>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,5 +1,6 @@
 const problems = {
     python: {
+      twosum:{
       meta: {
         title: "Two Sum",
         difficulty: "Easy",
@@ -43,9 +44,31 @@ const problems = {
 class Solution:
     def twoSum(self, nums: List[int], target: int) -> List[int]:
           
-      `
-    }
-  };
+      `,
+      testCases: [
+        { input: [ [2, 7, 11, 15], 9 ], expected: [0, 1] },
+        { input: [ [3, 2, 4], 6 ], expected: [1, 2] },
+        { input: [ [3, 3], 6 ], expected: [0, 1] },
+        { input: [ [0, 4, 3, 0], 0 ], expected: [0, 3] },
+        { input: [ [-1, -2, -3, -4, -5], -8 ], expected: [2, 4] },
+        { input: [ [-3, 4, 3, 90], 0], expected: [0, 2] },
+        { input: [ [1, 2, 5, 10, 15], 20 ], expected: [2, 4] },
+        { input: [ [100, 200, 300, 400, 500], 900 ], expected: [3, 4] },
+        { input: [ [1, 3, 7, 9, 2], 11 ], expected: [3, 4] },
+        { input: [ [2, 5, 5, 11], 10 ], expected: [1, 2] },
+        { input: [ [10**9, 1, 2, 10**9 - 1], 10**9 ], expected: [1, 3] }
+      ]
+    },
 
-  export default problems;
+    // Next problem here
+    // rev_linkedlist:
+    // meta: {
+    // 
+
+
+
+  }
+};
+
+export default problems;
   

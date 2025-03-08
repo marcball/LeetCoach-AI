@@ -1,12 +1,15 @@
 import React, { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import problems from "./ProblemsData"; // Import problem data
 import ProblemBorder from "./components/ProblemBorder";
 import CodeEditor from "./components/CodeEditor"; // Imports our code editor
 
 export default function ProblemTemplate() {
-  const { topic } = useParams();
-  const problem = problems[topic];
+  const { topic, problemID } = useParams();
+  console.log("🔷 topic:", topic, " | problemID:", problemID); // debug
+
+  const problem = problems[topic]?.[problemID];
 
   if (!problem) {
     return <h1 className="text-red-500 text-3xl">Problem Not Found</h1>;
@@ -14,6 +17,9 @@ export default function ProblemTemplate() {
 
   const [problemWidth, setProblemWidth] = useState(50); // Percentage width of the left side
   const [userCode, setUserCode] = useState(problem.starterCode || ""); // Starter code in editor
+  const [runOutput, setRunOutput] = useState("");
+  const [submitOutput, setSubmitOutput] = useState("");
+
 
   // Function to update the width of problem side.
   const handleDrag = useCallback((newX) => {
@@ -23,6 +29,69 @@ export default function ProblemTemplate() {
       setProblemWidth(newWidth);
     }
   }, [problemWidth]);
+
+  const handleCodeChange = (newCode) => {
+    console.log("User typed: (before)", newCode); // debug log
+    setUserCode(newCode); // update userCode's state.
+    console.log("User typed: (after)", newCode); // debug log
+  }
+
+
+  /**
+  * Handles running the code
+  * - Sends user's py3 code to FastAPI backend.
+  * - Shows the output or errors.
+  */
+  const handleRun = async (code) => {
+    setRunOutput("Running..."); // ensure the output updates properly
+  
+    try {
+      const response = await axios.post("http://localhost:8000/run", { 
+        code,
+        test_cases: [],  // No test cases for Run
+        title: "null"
+      });
+  
+      console.log("Run Response:", response.data); // debugging log
+  
+      if (response.data.error) {
+        setRunOutput(`Error:\n${response.data.error}`);
+      } else {
+        setRunOutput(response.data.output || "No output returned."); // fix to ensure it updates
+      }
+    } catch (error) {
+      console.error("Run Error:", error);
+      setRunOutput(`Failed to run code. ${error.message}`);
+    }
+  };
+
+    const handleSubmit = async () => {
+
+      console.log("🔷 SUBMITTING CODE:", userCode); // Debug log ✅
+
+      setSubmitOutput("Submitting...");
+    
+      try {
+        const response = await axios.post("http://localhost:8000/submit", { 
+          code: userCode,
+          test_cases: problems.python.twosum.testCases,
+          title: problem.meta.title, 
+        });
+
+        console.log("🔷 Submit Response:", response.data); // for debugging ✅
+    
+        if (response.data.error) {
+          setSubmitOutput(`Error:\n${response.data.error}`);
+        } else {
+          setSubmitOutput(response.data.output || "No output returned.");
+          console.log("Updated submitOutput:", response.data.output); // debug
+        }
+      } catch (error) {
+        console.error("😡 Submit Error:", error); // for debugging ✅
+        setSubmitOutput("Failed to submit code.");
+      }
+    };
+  
 
   return (
     <div className="flex h-screen w-screen bg-gray text-white">
@@ -40,7 +109,6 @@ export default function ProblemTemplate() {
             <p key={index} className="mb-3">{line}</p>
           ))}
         </div>
-
 
 
         {/* Examples */}
@@ -70,9 +138,17 @@ export default function ProblemTemplate() {
         className="flex flex-col"
         style={{ width: `${100 - problemWidth}%`, height: "100vh", transition: "width 0.1s ease-in-out" }}
       >
-        <h2 className="text-xl font-semibold text-white mb-4">Code Editor: Python</h2>
+        <h2 className="text-xl font-semibold text-white ">Code Editor: Python</h2>
         {/* Code Editor added */}
-        <CodeEditor starterCode={userCode} onCodeChange={setUserCode} /> 
+        <CodeEditor 
+          starterCode={userCode} 
+          onCodeChange={handleCodeChange}
+          onRunCode={handleRun}
+          onSubmitCode={handleSubmit}
+          output={runOutput}
+          submitOutput={submitOutput}
+          problemTitle={problem.meta.title}
+        /> 
       </div>
     </div>
   );

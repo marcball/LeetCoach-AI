@@ -13,5 +13,13 @@ npm run dev
 
 http://127.0.0.1:8000 -- backend
 http://localhost:5173 -- frontend
+
+
+
+To update your project in the future
+
+git add .
+git commit -m "Your commit message"
+git push origin main
 -----------------------------------------------------------
 
