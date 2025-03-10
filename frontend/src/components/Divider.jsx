@@ -1,21 +1,28 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 
-const ProblemBorder = ({ onDrag }) => {
+const DraggableDivider = ({ onDrag }) => {
   const isDragging = useRef(false);
-
-  const handleMouseDown = () => {
+  const lastX = useRef(null);
+  
+  const handleMouseDown = (e) => {
     isDragging.current = true;
+    lastX.current = e.clientX;
   };
-
-  const handleMouseMove = (e) => {
+  
+  const handleMouseMove = useCallback((e) => {
     if (!isDragging.current) return;
-    onDrag(e.clientX); // CHECKS <-- / --> MOVEMENT (x-axis)
-  };
-
+    
+    if (lastX.current === e.clientX) return; // Prevents unnecessary updates
+    
+    requestAnimationFrame(() => {
+      onDrag(e.clientX);
+    });
+  }, [onDrag]);
+  
   const handleMouseUp = () => {
     isDragging.current = false;
   };
-
+  
   useEffect(() => {
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
@@ -24,7 +31,7 @@ const ProblemBorder = ({ onDrag }) => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, []);
+  }, [handleMouseMove]);
 
   return (
     <div
@@ -34,9 +41,11 @@ const ProblemBorder = ({ onDrag }) => {
         width: "5px",
         height: "100%",
         cursor: "col-resize",
+        position: "absolute",
+        left: "calc(50% - 2.5px)",
       }}
     />
   );
 };
 
-export default ProblemBorder;
+export default DraggableDivider;

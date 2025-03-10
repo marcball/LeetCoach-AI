@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import problems from "./ProblemsData"; // Import problem data
-import ProblemBorder from "./components/ProblemBorder";
+import ProblemDivider from "./components/ProblemDivider";
 import CodeEditor from "./components/CodeEditor"; // Imports our code editor
 
 export default function ProblemTemplate() {
@@ -131,7 +131,7 @@ export default function ProblemTemplate() {
       </div>
 
       {/* Draggable Border */}
-      <ProblemBorder onDrag={handleDrag} />
+      <ProblemDivider onDrag={handleDrag} />
 
       {/* Right: Code Editor Placeholder */}
       <div 
