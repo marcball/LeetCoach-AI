@@ -46,7 +46,7 @@ export default function ProblemTemplate() {
     setRunOutput("Running..."); // ensure the output updates properly
   
     try {
-      const response = await axios.post("http://localhost:8000/run", { 
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/run`, { 
         code,
         test_cases: [],  // No test cases for Run
         title: "null"
@@ -72,7 +72,7 @@ export default function ProblemTemplate() {
       setSubmitOutput("Submitting...");
     
       try {
-        const response = await axios.post("http://localhost:8000/submit", { 
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/submit`, { 
           code: userCode,
           test_cases: problems.python.twosum.testCases,
           title: problem.meta.title, 
