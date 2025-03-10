@@ -14,7 +14,7 @@ class CodeRequest(BaseModel):
 # Add CORS middleware: gives React access to the backend.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # Allow requests from React
+    allow_origins=["*"], # Allow requests from React
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
