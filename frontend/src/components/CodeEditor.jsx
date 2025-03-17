@@ -4,8 +4,10 @@ import { python } from "@codemirror/lang-python";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import AIButton from "./AIButton";
 
-const CodeEditor = ({ starterCode, onCodeChange, onRunCode, onSubmitCode, output, submitOutput }) => {
+const CodeEditor = ({ starterCode, onCodeChange, onRunCode, onSubmitCode, output, submitOutput, toggleChat }) => {
   const [code, setCode] = useState(starterCode); // Sets starting code (func name)
+  console.log("🟢 Received toggleChat in CodeEditor:", toggleChat); // Debugging log
+
 
   const handleLocalCodeChange = (newCode) => {
     console.log("Updating Local Code State:", newCode); // Debug log
@@ -37,7 +39,7 @@ return (
     
       {/* Buttons inside CodeEditor */}
       <div className="p-2 bg-neutral-800 flex justify-between items-center">
-        <AIButton /> {/* AI Button on Left */}
+        <AIButton toggleChat={toggleChat}/> {/* AI Button on Left */}
 
         <div className="flex space-x-2">
           <button

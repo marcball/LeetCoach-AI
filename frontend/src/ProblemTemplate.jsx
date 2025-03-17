@@ -4,16 +4,26 @@ import axios from "axios";
 import problems from "./ProblemsData"; // Import problem data
 import ProblemDivider from "./components/ProblemDivider";
 import CodeEditor from "./components/CodeEditor"; // Imports our code editor
+import LeetCoachChatWindow from "./components/LeetCoachChatWindow";
+import AIButton from "./components/AIButton";
+
 
 export default function ProblemTemplate() {
   const { topic, problemID } = useParams();
-  console.log("🔷 topic:", topic, " | problemID:", problemID); // debug
-
   const problem = problems[topic]?.[problemID];
 
   if (!problem) {
     return <h1 className="text-red-500 text-3xl">Problem Not Found</h1>;
   }
+
+  // Toggling AI CHAT
+  const [isChatOpen, setIsChatOpen] = useState(false); // Chat visibility
+
+  const toggleChat = () => {
+    console.log("✅ AI Button Clicked! Toggling Chat.", isChatOpen); // Debugging
+    setIsChatOpen((prev) => !prev);
+  };
+  //
 
   const [problemWidth, setProblemWidth] = useState(50); // Percentage width of the left side
   const [userCode, setUserCode] = useState(problem.starterCode || ""); // Starter code in editor
@@ -29,6 +39,7 @@ export default function ProblemTemplate() {
       setProblemWidth(newWidth);
     }
   }, [problemWidth]);
+
 
   const handleCodeChange = (newCode) => {
     console.log("User typed: (before)", newCode); // debug log
@@ -148,9 +159,20 @@ export default function ProblemTemplate() {
           output={runOutput}
           submitOutput={submitOutput}
           problemTitle={problem.meta.title}
+          toggleChat={toggleChat}
         /> 
+
+        {/* AI LEETCOACH CHAT WINDOW  */}
+        {isChatOpen && (
+          <LeetCoachChatWindow
+            userCode={userCode}
+            problemTitle={problem.meta.title}
+            isOpen={isChatOpen}
+            toggleChat={toggleChat}
+          />
+        )}
       </div>
     </div>
-  );
   
+  );
 }

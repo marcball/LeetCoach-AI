@@ -11,3 +11,8 @@ __pycache__/
 
 # Ignore IDE config files
 .vscode/
+
+# Ignore environment variables
+.env
+backend/.env
+frontend/.env

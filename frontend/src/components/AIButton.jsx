@@ -1,6 +1,17 @@
-const AIButton = () => {
+import React from "react";
+
+const AIButton = ({ toggleChat }) => {
+  console.log("🔵 Received toggleChat in AIButton:", toggleChat); // Debugging log
   return (
     <button
+      onClick={() => {
+        console.log("🟠 AI Button Clicked!");
+        if (toggleChat){
+          toggleChat(); // ✅ Call toggleChat safely
+        } else {
+          console.error("❌ toggleChat is undefined!");
+
+      }}} // Makes button open chat window
       className="group relative flex items-center gap-2 px-2 py-1 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded transition-all duration-300"
     >
       {/* LeetCoach Text with Glow Effect */}

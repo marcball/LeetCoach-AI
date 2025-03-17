@@ -21,5 +21,10 @@ To update your project in the future
 git add .
 git commit -m "Your commit message"
 git push origin main
+
+
+**Add this to where you call apiKey from:
+const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+
 -----------------------------------------------------------
 
