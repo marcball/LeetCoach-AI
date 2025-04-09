@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import subprocess
 import openai
+from openai import OpenAI
 import os
 from typing import List, Dict
 
@@ -44,7 +45,9 @@ async def analyze_code(request: Request):
     ]
 
     try:
-        response = openai.Completion.create(
+        client = OpenAI()
+        
+        response = client.chat.completions.create(
             model="gpt-4o",
             messages=conversation
         )
