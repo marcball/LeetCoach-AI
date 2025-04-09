@@ -44,11 +44,14 @@ async def analyze_code(request: Request):
     ]
 
     try:
-        response = openai.chat.completions.create(
+        response = openai.Completion.create(
             model="gpt-4o",
             messages=conversation
         )
-        return { "response": response['choices'][0]['message']['content'] }
+        ai_response = response['choices'][0]['message']['content'] 
+        return {"response": ai_response}
+
+
     except Exception as e:
         return { "error": str(e) }
     
