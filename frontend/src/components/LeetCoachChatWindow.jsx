@@ -5,7 +5,7 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [position, setPosition] = useState({ x: window.innerWidth - 350, y: 100 })
+  const [position, setPosition] = useState({ x: window.innerWidth / 2 - 960, y: 100 })
   // Might  change the starting position of the text window ^^
 
   const chatRef = useRef(null); // Let's us change the window position
@@ -57,8 +57,8 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
   const handleMouseMove = (event) => {
     if (!dragging.current) return;
 
-    const newX = Math.max(0, Math.min(window.innerWidth - 300, event.clientX - 150));
-    const newY = Math.max(50, Math.min(window.innerHeight - 450, event.clientY - 20));
+    const newX = Math.max(0, Math.min(window.innerWidth - 960, event.clientX - 480));
+    const newY = Math.max(50, Math.min(window.innerHeight - 600, event.clientY - 20));
 
     setPosition({ x: newX, y: newY });
   };
@@ -72,7 +72,7 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
     if (position.x < window.innerWidth * 0.2) {
       setPosition({ x: 10, y: position.y }); // Snaps to left side
     } else if (position.x > window.innerWidth * 0.8) {
-      setPosition({ x: window.innerWidth - 320, y: position.y }); // Snaps to right side
+      setPosition({ x: window.innerWidth - 960, y: position.y }); // Snaps to right side
     }
   };
 
@@ -92,7 +92,15 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
         <div
           ref={chatRef}
           className="fixed w-80 h-96 bg-gray-800 text-white rounded shadow-lg flex flex-col"
-          style={{ left: position.x, top: position.y, position: "absolute" }}
+          style={{ 
+            left: position.x, 
+            top: position.y, 
+            position: "absolute",
+            width: "49vw",
+            maxWidth: "960px",
+            height: "49vh",
+            maxHeight: "800px",
+          }}
         >
           {/* Chat Header */}
           <div className="p-2 bg-gray-900 cursor-move flex justify-between" onMouseDown={handleMouseDown}>
