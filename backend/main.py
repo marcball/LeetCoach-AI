@@ -1,7 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import subprocess
+import openai
+import os
 from typing import List, Dict
 
 app = FastAPI()
@@ -20,6 +22,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.post("/analyze")
+async def analyze_code(request: Request):
+    body = await request.json()
+    user_code = body.get("userCode", "")
+    user_message = body.get("userMessage", "")
+    problem_title = body.get("problemTitle", "")
+
+    conversation = [
+        {
+            "role": "system",
+            "content": """You are a LeetCode tutor that NEVER provides direct answers or code...
+            (💡 paste your original system prompt here!)"""
+        },
+        {
+            "role": "user",
+            "content": f"Problem: {problem_title}\n\nUser Code:\n{user_code}\n\nUser Message:\n{user_message}"
+        }
+    ]
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=conversation
+        )
+        return { "response": response.choices[0].message["content"] }
+    except Exception as e:
+        return { "error": str(e) }
+    
 
 @app.post("/run")
 def run_code(request: CodeRequest):

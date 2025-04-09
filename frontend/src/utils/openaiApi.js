@@ -46,35 +46,21 @@ let conversationHistory = [
 ];
 
 export async function analyzeCodeWithAI(userMessage, userCode, problemTitle) {
-  // Add user input to conversation history
-  conversationHistory.push({
-    role: "user", 
-    content: `Problem: "${problemTitle}"\n\nUser Code:\n${userCode}\n\nUser Message:\n${userMessage}`
-  });
-
-  try {
-    const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        model: "gpt-4o-mini",
-        messages: conversationHistory,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${API_KEY}`
-        }
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/analyze`, {
+        userMessage,
+        userCode,
+        problemTitle
+      });
+  
+      if (response.data.error) {
+        return `Error: ${response.data.error}`;
       }
-    );
-
-    const aiResponse = response.data.choices[0].message.content;
-
-    // Adds AI's response to the conversation history:
-    conversationHistory.push({ role: "assistant", content: aiResponse });
-
-    return aiResponse
-  } catch (error) {
-    console.error("Error AI cannot read code editor: ", error);
-    return "Leetcoach ran into an error processing your request."
+  
+      return response.data.response;
+    } catch (error) {
+      console.error("LeetCoach AI error:", error);
+      return "Leetcoach ran into an error processing your request.";
+    }
   }
-}
+  
