@@ -44,7 +44,7 @@ async def analyze_code(request: Request):
     ]
 
     try:
-        response = openai.ChatCompletion.create(
+        response = openai.completions.create(
             model="gpt-4o",
             messages=conversation
         )
