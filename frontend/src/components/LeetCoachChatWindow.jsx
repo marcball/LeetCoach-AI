@@ -58,7 +58,7 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
     if (!dragging.current) return;
 
     const newX = Math.max(0, Math.min(window.innerWidth - window.innerWidth * 0.35, event.clientX - window.innerWidth * 0.175)); // Center for 35vw
-    const newY = Math.max(50, Math.min(window.innerHeight - window.innerHeight * 0.35, event.clientY - 20)); // Center for 35vh
+    const newY = Math.max(50, Math.min(window.innerHeight - window.innerHeight * 0.38, event.clientY - 20)); // Center for 35vh
 
     setPosition({ x: newX, y: newY });
   };
@@ -69,9 +69,9 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
     dragging.current = false;
     chatRef.current.style.transition = "left 0.2 ease-out";
 
-    if (position.x < window.innerWidth * 0.2) {
+    if (position.x < window.innerWidth * 0.1) {
       setPosition({ x: 10, y: position.y }); // Snaps to left side
-    } else if (position.x > window.innerWidth * 0.8) {
+    } else if (position.x > window.innerWidth * 0.9) {
       setPosition({ x: window.innerWidth - window.innerWidth * 0.35 - 10, y: position.y });  // Snaps to the right side
     }
   };
@@ -98,8 +98,8 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
             position: "absolute",
             width: "35vw",
             maxWidth: "672px",
-            height: "35vh",
-            maxHeight: "378px",
+            height: "38vh",
+            maxHeight: "400px",
           }}
         >
           {/* Chat Header */}
