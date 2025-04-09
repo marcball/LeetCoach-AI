@@ -5,7 +5,7 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [position, setPosition] = useState({ x: window.innerWidth / 2 - 960, y: 100 })
+  const [position, setPosition] = useState({ x: window.innerWidth / 2 - 320, y: 100 })
   // Might  change the starting position of the text window ^^
 
   const chatRef = useRef(null); // Let's us change the window position
@@ -57,8 +57,8 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
   const handleMouseMove = (event) => {
     if (!dragging.current) return;
 
-    const newX = Math.max(0, Math.min(window.innerWidth - 960, event.clientX - 480));
-    const newY = Math.max(50, Math.min(window.innerHeight - 600, event.clientY - 20));
+    const newX = Math.max(0, Math.min(window.innerWidth - window.innerWidth * 0.35, event.clientX - window.innerWidth * 0.175)); // Center for 35vw
+    const newY = Math.max(50, Math.min(window.innerHeight - window.innerHeight * 0.35, event.clientY - 20)); // Center for 35vh
 
     setPosition({ x: newX, y: newY });
   };
@@ -72,7 +72,7 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
     if (position.x < window.innerWidth * 0.2) {
       setPosition({ x: 10, y: position.y }); // Snaps to left side
     } else if (position.x > window.innerWidth * 0.8) {
-      setPosition({ x: window.innerWidth - 960, y: position.y }); // Snaps to right side
+      setPosition({ x: window.innerWidth - window.innerWidth * 0.35 - 10, y: position.y });  // Snaps to the right side
     }
   };
 
@@ -96,10 +96,10 @@ export default function LeetCoachChatWindow( {userCode, problemTitle, isOpen, to
             left: position.x, 
             top: position.y, 
             position: "absolute",
-            width: "49vw",
-            maxWidth: "960px",
-            height: "49vh",
-            maxHeight: "800px",
+            width: "35vw",
+            maxWidth: "672px",
+            height: "35vh",
+            maxHeight: "378px",
           }}
         >
           {/* Chat Header */}
