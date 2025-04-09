@@ -51,7 +51,7 @@ async def analyze_code(request: Request):
             model="gpt-4o",
             messages=conversation
         )
-        ai_response = response['choices'][0]['message']['content'] 
+        ai_response = response.choices[0].message['content']
         return {"response": ai_response}
 
 
