@@ -19,7 +19,7 @@ export default function App() {
           Your personalized Leetcode Tutor.
           Learn leetcode the smart way.
         </p>
-        <Link to="/data_structures">
+        <Link to="/problems/python/twosum"> {/* /data_structures -- CHANGE IT BACK TO THIS IF YOU EVER BEGIN WORKING ON IT AGAIN.*/}
           <button className="mt-4 bg-white hover:bg-gray-200 text-black font-bold py-2 px-4 rounded-full">
             Get started
           </button>
