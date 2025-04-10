@@ -6,7 +6,7 @@ LeetCoach is an AI-powered LeetCode-style coding interview prep platform. It all
 
 ## Overview
 
-LeetCoach replicates the experience of solving LeetCode problems and simulates a technical interview environment enhanced by AI tutoring. As you write and submit code, the AI helps you understand the problem, debug issues, and think critically — based on how much effort you've put in.
+LeetCoach replicates the experience of solving LeetCode problems and simulates a technical interview environment enhanced by AI tutoring. As you write and submit code, the AI helps you understand the problem, debug issues, and think critically based on how much effort you've put in.
 
 ---
 
@@ -47,7 +47,7 @@ Given an array of integers, **nums**, and a target integer, **target**, return t
 Here’s a brute force solution that is **close but not optimal**:
 
 ```python
-def two_sum(nums, target):
+def twoSum(nums, target):
     for i in range(len(nums)):
         for j in range(i + 1, len(nums)):
             if nums[i] + nums[j] == target:
@@ -67,7 +67,7 @@ The AI coaching assistant in LeetCoach analyzes the user's code and provides hel
 ### Optimal Solution Using a Hash Map:
 
 ```python
-def two_sum(nums, target):
+def twoSum(nums, target):
     num_map = {}
     for i, num in enumerate(nums):
         complement = target - num
