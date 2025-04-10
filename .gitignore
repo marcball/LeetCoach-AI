@@ -16,3 +16,6 @@ __pycache__/
 .env
 backend/.env
 frontend/.env
+
+# Old documentation
+old_readme.txt
