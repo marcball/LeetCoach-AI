@@ -4,13 +4,13 @@
 
 /* Global Styles */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Geist', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #5db335;
+  background-color: #0a0a0a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -31,11 +31,28 @@ a:hover {
 /* Body */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #242424; /* Light gray background for better contrast */
+  background-color: #0a0a0a;
+}
+
+/* Dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a #0a0a0a;
 }
 
 /* Headings */
@@ -80,11 +97,11 @@ button:focus-visible {
 }
 
 .cm-editor {
-  background-color: #242424 !important; 
+  background-color: #1a1a1a !important;
 }
 
-.cm-gutters { /* number line color */
-  background-color: #242424 !important; 
-  color: #c0c0c0 !important; 
-  border-right: 1px solid #1f1f1f !important; 
+.cm-gutters {
+  background-color: #1a1a1a !important;
+  color: #555 !important;
+  border-right: 1px solid #222 !important;
 }

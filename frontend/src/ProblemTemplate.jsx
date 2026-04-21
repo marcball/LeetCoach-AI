@@ -1,74 +1,46 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import problems from "./ProblemsData"; // Import problem data
+import problems from "./ProblemsData";
 import ProblemDivider from "./components/ProblemDivider";
-import CodeEditor from "./components/CodeEditor"; // Imports our code editor
+import CodeEditor from "./components/CodeEditor";
 import LeetCoachChatWindow from "./components/LeetCoachChatWindow";
-import AIButton from "./components/AIButton";
-
 
 export default function ProblemTemplate() {
   const { topic, problemID } = useParams();
   const problem = problems[topic]?.[problemID];
 
-  if (!problem) {
-    return <h1 className="text-red-500 text-3xl">Problem Not Found</h1>;
-  }
-
-  // Toggling AI CHAT
-  const [isChatOpen, setIsChatOpen] = useState(false); // Chat visibility
-
-  const toggleChat = () => {
-    console.log("✅ AI Button Clicked! Toggling Chat.", isChatOpen); // Debugging
-    setIsChatOpen((prev) => !prev);
-  };
-  //
-
-  const [problemWidth, setProblemWidth] = useState(50); // Percentage width of the left side
-  const [userCode, setUserCode] = useState(problem.starterCode || ""); // Starter code in editor
+  // All hooks must be declared before any conditional return
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [problemWidth, setProblemWidth] = useState(50);
+  const [userCode, setUserCode] = useState(problem?.starterCode || "");
   const [runOutput, setRunOutput] = useState("");
   const [submitOutput, setSubmitOutput] = useState("");
 
+  const toggleChat = () => setIsChatOpen((prev) => !prev);
 
-  // Function to update the width of problem side.
   const handleDrag = useCallback((newX) => {
     const screenWidth = window.innerWidth;
     const newWidth = (newX / screenWidth) * 100;
     if (newWidth > 5 && newWidth < 95) {
       setProblemWidth(newWidth);
     }
-  }, [problemWidth]);
+  }, []);
 
+  const handleCodeChange = (newCode) => setUserCode(newCode);
 
-  const handleCodeChange = (newCode) => {
-    console.log("User typed: (before)", newCode); // debug log
-    setUserCode(newCode); // update userCode's state.
-    console.log("User typed: (after)", newCode); // debug log
-  }
-
-
-  /**
-  * Handles running the code
-  * - Sends user's py3 code to FastAPI backend.
-  * - Shows the output or errors.
-  */
   const handleRun = async (code) => {
-    setRunOutput("Running..."); // ensure the output updates properly
-  
+    setRunOutput("Running...");
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/run`, { 
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/run`, {
         code,
-        test_cases: [],  // No test cases for Run
-        title: "null"
+        test_cases: [],
+        title: "null",
       });
-  
-      console.log("Run Response:", response.data); // debugging log
-  
       if (response.data.error) {
         setRunOutput(`Error:\n${response.data.error}`);
       } else {
-        setRunOutput(response.data.output || "No output returned."); // fix to ensure it updates
+        setRunOutput(response.data.output || "No output returned.");
       }
     } catch (error) {
       console.error("Run Error:", error);
@@ -76,83 +48,90 @@ export default function ProblemTemplate() {
     }
   };
 
-    const handleSubmit = async () => {
-
-      console.log("🔷 SUBMITTING CODE:", userCode); // Debug log ✅
-
-      setSubmitOutput("Submitting...");
-    
-      try {
-        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/submit`, { 
-          code: userCode,
-          test_cases: problems.python.twosum.testCases,
-          title: problem.meta.title, 
-        });
-
-        console.log("🔷 Submit Response:", response.data); // for debugging ✅
-    
-        if (response.data.error) {
-          setSubmitOutput(`Error:\n${response.data.error}`);
-        } else {
-          setSubmitOutput(response.data.output || "No output returned.");
-          console.log("Updated submitOutput:", response.data.output); // debug
-        }
-      } catch (error) {
-        console.error("😡 Submit Error:", error); // for debugging ✅
-        setSubmitOutput("Failed to submit code.");
+  const handleSubmit = async () => {
+    setSubmitOutput("Submitting...");
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/submit`, {
+        code: userCode,
+        test_cases: problem.testCases,
+        title: problem.meta.title,
+      });
+      if (response.data.error) {
+        setSubmitOutput(`Error:\n${response.data.error}`);
+      } else {
+        setSubmitOutput(response.data.output || "No output returned.");
       }
-    };
-  
+    } catch (error) {
+      console.error("Submit Error:", error);
+      setSubmitOutput("Failed to submit code.");
+    }
+  };
+
+  if (!problem) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
+        <p className="text-red-400 text-xl">Problem not found.</p>
+      </div>
+    );
+  }
+
+  const difficultyColors = {
+    Easy: "text-green-400 bg-green-400/10 border-green-400/20",
+    Medium: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+    Hard: "text-red-400 bg-red-400/10 border-red-400/20",
+  };
 
   return (
-    <div className="flex h-screen w-screen bg-gray text-white">
-      {/* Left: Problem Statement */}
-      <div 
-        className="w-1/2 p-8 overflow-y-auto"
+    <div className="flex h-screen w-screen bg-[#0a0a0a] text-white">
+      <div
+        className="overflow-y-auto p-8"
         style={{ width: `${problemWidth}%`, transition: "width 0.1s ease-in-out" }}
       >
-        <h1 className="text-3xl font-bold">{problem.meta.title}</h1>
-        <p className="text-zinc-400 mt-2 text-sm">{problem.meta.category} ➜ {problem.meta.difficulty}</p>
+        <h1 className="text-2xl font-bold tracking-tight">{problem.meta.title}</h1>
+        <div className="flex items-center gap-3 mt-2">
+          <span className="text-xs text-neutral-600">{problem.meta.category}</span>
+          <span className={`text-xs font-medium px-2 py-0.5 rounded border ${difficultyColors[problem.meta.difficulty] || "text-neutral-400"}`}>
+            {problem.meta.difficulty}
+          </span>
+        </div>
 
-        {/* Problem Description */}
-        <div className="mt-6 text-gray-200">
+        <div className="mt-6 text-neutral-400 text-sm leading-relaxed space-y-3">
           {problem.description.map((line, index) => (
-            <p key={index} className="mb-3">{line}</p>
+            <p key={index}>{line}</p>
           ))}
         </div>
 
-
-        {/* Examples */}
-        <h2 className="text-lg font-semibold mt-6">Examples:</h2>
+        <h2 className="text-xs font-semibold text-neutral-600 uppercase tracking-widest mt-8 mb-3">Examples</h2>
         {problem.example.map((ex, index) => (
-          <div key={index} className="mt-3 p-4 bg-neutral-700 rounded-md"> {/* MAKE THIS NOT BLUE BEHIND IT */}
-            <p><strong>Input:</strong> {ex.input}</p>
-            <p><strong>Output:</strong> {ex.output}</p>
-            {ex.explanation && <p className="text-zinc-400">{ex.explanation}</p>}
+          <div key={index} className="mt-2 p-4 bg-[#111] border border-white/5 rounded-lg text-sm font-mono">
+            <p><span className="text-neutral-500">Input: </span><span className="text-neutral-200">{ex.input}</span></p>
+            <p><span className="text-neutral-500">Output: </span><span className="text-neutral-200">{ex.output}</span></p>
+            {ex.explanation && <p className="text-neutral-600 mt-1">{ex.explanation}</p>}
           </div>
         ))}
 
-        {/* Constraints */}
-        <h2 className="text-lg font-semibold mt-6">Constraints:</h2>
-          <ul className="list-disc ml-6 text-zinc-400">
-            {problem.constraints.map((constraint, index) => (
-              <li key={index}>{constraint}</li>
-            ))}
-          </ul>
+        <h2 className="text-xs font-semibold text-neutral-600 uppercase tracking-widest mt-8 mb-3">Constraints</h2>
+        <ul className="space-y-1.5 text-sm text-neutral-500 font-mono">
+          {problem.constraints.map((constraint, index) => (
+            <li key={index} className="flex items-start gap-2">
+              <span className="text-[#FFD60A]/40 select-none">—</span>
+              {constraint}
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {/* Draggable Border */}
       <ProblemDivider onDrag={handleDrag} />
 
-      {/* Right: Code Editor Placeholder */}
-      <div 
+      <div
         className="flex flex-col"
         style={{ width: `${100 - problemWidth}%`, height: "100vh", transition: "width 0.1s ease-in-out" }}
       >
-        <h2 className="text-xl font-semibold text-white ">Code Editor: Python</h2>
-        {/* Code Editor added */}
-        <CodeEditor 
-          starterCode={userCode} 
+        <div className="px-4 py-2.5 bg-[#111] border-b border-white/5 flex items-center">
+          <span className="text-xs font-medium text-neutral-500">Python 3</span>
+        </div>
+        <CodeEditor
+          starterCode={userCode}
           onCodeChange={handleCodeChange}
           onRunCode={handleRun}
           onSubmitCode={handleSubmit}
@@ -160,9 +139,8 @@ export default function ProblemTemplate() {
           submitOutput={submitOutput}
           problemTitle={problem.meta.title}
           toggleChat={toggleChat}
-        /> 
+        />
 
-        {/* AI LEETCOACH CHAT WINDOW  */}
         {isChatOpen && (
           <LeetCoachChatWindow
             userCode={userCode}
@@ -173,6 +151,5 @@ export default function ProblemTemplate() {
         )}
       </div>
     </div>
-  
   );
 }

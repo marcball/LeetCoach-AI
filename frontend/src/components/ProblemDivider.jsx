@@ -5,7 +5,7 @@ const ProblemDivider = ({ onDrag }) => {
   const lastX = useRef(null);
   
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (e) => {
     isDragging.current = true;
     lastX.current = e.clientX;
   };

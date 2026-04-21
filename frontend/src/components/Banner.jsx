@@ -1,17 +1,12 @@
-import React from "react";
-
 export default function Banner() {
   return (
-    <div className="relative text-white w-full "> {/* border-b border-gray-600 h-16 ex for height of banner */}
-
-    {/* Sign In Button positioned at top right */}
-      <div className="absolute top-2 right-4">
-        <button className="bg-white hover:bg-gray-200 text-black font-bold py-1.5 px-4 rounded-full">
-          Sign In
-        </button>
-      </div>
-    </div>
+    <nav className="flex items-center justify-between px-8 py-4">
+      <span className="text-sm font-bold tracking-tight text-white">
+        LeetCoach <span className="text-[#FFD60A]">AI</span>
+      </span>
+      <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-white/5 text-neutral-500 border border-white/10">
+        Beta
+      </span>
+    </nav>
   );
 }
-
-
