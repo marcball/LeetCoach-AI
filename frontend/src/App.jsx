@@ -28,7 +28,7 @@ export default function App() {
               <span>AI-Powered Learning</span>
             </div>
 
-            <h1 className="text-[5.5rem] font-bold tracking-tight leading-[1.05] text-white">
+            <h1 className="text-[2.8rem] sm:text-[4rem] md:text-[5.5rem] font-bold tracking-tight leading-[1.05] text-white">
               Code smarter.<br />
               Get <span className="text-[#FFD60A]">hired</span> faster.
             </h1>
@@ -37,7 +37,7 @@ export default function App() {
               Get hints, not answers — learn to think like an engineer.
             </p>
 
-            <Link to="/problems/python/twosum" className="mt-7">
+            <Link to="/data_structures" className="mt-7">
               <button className="inline-flex items-center gap-2 bg-[#FFD60A] hover:bg-[#e6c000] hover:scale-105 hover:shadow-[0_0_28px_rgba(255,214,10,0.4)] text-black font-bold py-3.5 px-9 rounded-full text-sm transition-all duration-200">
                 Get Started
                 <span className="text-base leading-none">→</span>
@@ -54,14 +54,14 @@ export default function App() {
       </div>
 
       {/* ── BELOW FOLD — Feature cards ── */}
-      <div className="border-t border-white/[0.06] px-8 py-28">
+      <div className="border-t border-white/[0.06] px-4 md:px-8 py-16 md:py-28">
         <div className="max-w-5xl mx-auto">
           <p className="text-center text-neutral-600 text-xs uppercase tracking-widest mb-5">What you get</p>
           <h2 className="text-center text-white text-4xl font-bold tracking-tight mb-20">
             Everything you need to get hired.
           </h2>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="border border-white/10 rounded-2xl p-8 bg-[#0f0f0f]">
               <div className="text-[#FFD60A] text-lg mb-6">✦</div>
               <h3 className="text-white font-bold text-base mb-3">Hints, not answers</h3>

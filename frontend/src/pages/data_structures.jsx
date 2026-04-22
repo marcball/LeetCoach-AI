@@ -1,88 +1,86 @@
-import React from "react";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+import Banner from "../components/Banner";
+
+const categories = [
+  {
+    name: "Arrays & Hashing",
+    icon: "▦",
+    problems: 1,
+    difficulty: "Easy",
+    active: true,
+    link: "/problems/python/twosum",
+  },
+  { name: "Two Pointers", icon: "⇆", problems: 1, difficulty: "Easy", active: true, link: "/problems/python/validpalindrome" },
+  { name: "Sliding Window", icon: "⊡", problems: 1, difficulty: "Easy", active: true, link: "/problems/python/buysellstock" },
+  { name: "Stack", icon: "⊟", problems: 0, difficulty: "Easy", active: false },
+  { name: "Binary Search", icon: "⌖", problems: 0, difficulty: "Easy", active: false },
+  { name: "Linked List", icon: "⊸", problems: 0, difficulty: "Medium", active: false },
+  { name: "Trees / BST", icon: "⑂", problems: 0, difficulty: "Medium", active: false },
+  { name: "Graphs / DFS / BFS", icon: "◎", problems: 0, difficulty: "Hard", active: false },
+  { name: "Dynamic Programming", icon: "→", problems: 0, difficulty: "Hard", active: false },
+];
+
+const difficultyStyle = {
+  Easy: "text-green-400 bg-green-400/10 border-green-400/20",
+  Medium: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+  Hard: "text-red-400 bg-red-400/10 border-red-400/20",
+};
 
 export default function DSAPage() {
-  // Data structure list with progress
-  const dataStructures = [
-    { name: "Arrays", description: "Great for beginners", progress: 70, difficulty: "Easy",
-      problems: [
-        { title: "Two Sum", link: "/problems/python/twosum" }
-      ]
-    },
-    { name: "Linked Lists", description: "A bit more challenging", progress: 50, difficulty: "Easy" },
-    { name: "Stacks", description: "Simple and useful", progress: 85, difficulty: "Medium" },
-    { name: "Queues", description: "Easy to grasp", progress: 40, difficulty: "Medium" },
-    { name: "Trees", description: "Intermediate complexity", progress: 30, difficulty: "Medium" },
-    { name: "Graphs", description: "Advanced concepts", progress: 20, difficulty: "Hard" },
-    { name: "Heaps", description: "Intermediate level", progress: 60, difficulty: "Hard" },
-    { name: "Hash Tables", description: "Very practical", progress: 90, difficulty: "Hard" },
-  ];
-
   return (
-    <div className="w-screen bg-gray">
-      {/* Fixed Header */}
-        <h1 className="text-4xl font-bold p-6 text-center top-0 w-full">DSA Preparation</h1>
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <Banner />
 
+      <div className="max-w-5xl mx-auto px-4 md:px-8 pt-16 pb-28">
+        <h1 className="text-center text-3xl md:text-5xl font-bold tracking-tight mb-3">
+          Pick a topic.
+        </h1>
+        <p className="text-center text-neutral-500 text-sm md:text-base mb-16">
+          Master the patterns that show up in every interview.
+        </p>
 
-      {/* Fullscreen layout with two sections per row */}
-      <div className="flex flex-col">
-        {dataStructures.reduce((rows, ds, index) => {
-          // Group items in pairs for two-column layout
-          if (index % 2 === 0) {
-            rows.push([ds]);
-          } else {
-            rows[rows.length - 1].push(ds);
-          }
-          return rows;
-        }, []).map((row, rowIndex) => (
-          <div key={rowIndex} className="w-screen min-h-screen flex flex-wrap justify-center items-center gap-6 p-6">
-            {row.map((ds, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {categories.map((cat) => {
+            const card = (
               <div
-                key={index}
-                className="w-full md:w-[45%] bg-white shadow-2xl rounded-xl p-12 flex flex-col justify-between"
+                className={`relative border rounded-2xl p-6 flex flex-col gap-3 transition-all duration-200 ${
+                  cat.active
+                    ? "border-[#FFD60A]/30 bg-[#0f0f0f] hover:border-[#FFD60A]/60 hover:shadow-[0_0_20px_rgba(255,214,10,0.08)] cursor-pointer"
+                    : "border-white/[0.06] bg-[#0c0c0c] opacity-50 cursor-default"
+                }`}
               >
-                {/* Difficulty Level */}
-                <div className={`text-white text-lg font-bold px-4 py-2 rounded-md w-fit ${
-                  ds.difficulty === "Easy" ? "bg-green-500" :
-                  ds.difficulty === "Medium" ? "bg-yellow-500" :
-                  "bg-red-500"
-                }`}>
-                {ds.difficulty}
+                <div className="flex items-center justify-between">
+                  <span className={`text-xl ${cat.active ? "text-[#FFD60A]" : "text-neutral-600"}`}>
+                    {cat.icon}
+                  </span>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded border ${difficultyStyle[cat.difficulty]}`}>
+                    {cat.difficulty}
+                  </span>
                 </div>
 
-                {/* Title & Description */}
-                <h3 className="text-5xl font-bold text-gray-800 mt-6">{ds.name}</h3>
-                <p className="text-2xl text-gray-600 mt-4">{ds.description}</p>
+                <h3 className="text-white font-bold text-sm leading-snug">{cat.name}</h3>
 
-                {/* Progress Bar */}
-                <div className="mt-6 w-full">
-                  <div className="bg-gray-300 h-6 rounded-full">
-                    <div
-                      className="bg-purple-600 h-6 rounded-full transition-all duration-500"
-                      style={{ width: `${ds.progress}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xl text-gray-500 mt-2">
-                    {ds.progress}% completed
+                {cat.active ? (
+                  <p className="text-[#FFD60A] text-xs font-medium">
+                    {cat.problems} {cat.problems === 1 ? "Problem" : "Problems"}
                   </p>
-                </div>
-
-                {/* ✅ Problem List (Now Clickable) */}
-                <div className="mt-8 bg-gray-200 p-10 rounded-lg min-h-[150px] flex flex-col items-start">
-                  {ds.problems && ds.problems.length > 0 ? (
-                    ds.problems.map((problem, index) => (
-                      <Link key={index} to={problem.link} className="text-lg text-blue-500 hover:underline">
-                        {problem.title}
-                      </Link>
-                    ))
-                  ) : (
-                    <p className="text-xl text-gray-700">No problems yet...</p>
-                  )}
-                </div>
+                ) : (
+                  <p className="text-neutral-700 text-xs flex items-center gap-1.5">
+                    <span>🔒</span> Coming Soon
+                  </p>
+                )}
               </div>
-            ))}
-          </div>
-        ))}
+            );
+
+            return cat.active ? (
+              <Link key={cat.name} to={cat.link}>
+                {card}
+              </Link>
+            ) : (
+              <div key={cat.name}>{card}</div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

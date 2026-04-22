@@ -2,17 +2,19 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import subprocess
+import sys
 import openai
 from openai import OpenAI
 import os
-from typing import List, Dict
+from typing import List, Dict, Any
 
 app = FastAPI()
 
 class CodeRequest(BaseModel):
-    code: str   # This is the Python code sent from the frontend.
-    test_cases: List[Dict[str, List]] # list of test cases, each with expected input/output
-    title: str # problem title
+    code: str
+    test_cases: List[Dict[str, Any]]
+    title: str
+    method: str = "twoSum"  # function name to call on Solution(), e.g. "twoSum", "maxProfit"
 
 # Add CORS middleware: gives React access to the backend.
 app.add_middleware(
@@ -95,20 +97,27 @@ async def analyze_code(request: Request):
 def run_code(request: CodeRequest):
     try:
         # Run Python code safely inside of a subprocess
+        code_to_run = request.code
+
+        # Auto-call the solution with the first test case so print statements and return value show up
+        if request.test_cases:
+            inputs = request.test_cases[0]["input"]
+            code_to_run += f"\n\nsol = Solution()\nresult = sol.{request.method}(*{inputs})\nif result is not None: print(result)"
+
         process = subprocess.run(
-            ["python", "-c", request.code],
+            [sys.executable, "-c", code_to_run],
             capture_output=True,
             text=True,
-            timeout=5 # 5 seconds to prevent infinite loops.
+            timeout=5
         )
 
         return {"output": process.stdout, "error": process.stderr}
-    
+
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=101, detail="⏳ CODE TIMED OUT 5 SECONDS - MAKE IT FASTER! ⏳")
-        
+
     except Exception as e:
-        raise HTTPException(status_code=102, detail="Internal Server Error: {e}")
+        raise HTTPException(status_code=102, detail=f"Internal Server Error: {e}")
 
 @app.post("/submit")
 def submit_code(request: CodeRequest):
@@ -125,14 +134,14 @@ def submit_code(request: CodeRequest):
         #submitting debug log here
 
         for case in test_cases:
-            nums, target = case["input"]
+            inputs = case["input"]
             expected_output = str(case["expected"])
 
             user_code = f"""
-{request.code} 
+{request.code}
 
 sol = Solution()
-print(sol.twoSum({nums}, {target}))
+print(sol.{request.method}(*{inputs}))
 """
 
 
@@ -140,7 +149,7 @@ print(sol.twoSum({nums}, {target}))
             print('running user code:', user_code) #debug log
             
             process = subprocess.run(
-                ["python", "-c", user_code],
+                [sys.executable, "-c", user_code],
                 capture_output=True,
                 text=True,
                 timeout=5

@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-
 /**
  * 
  * @param {*} userCode - The user's code from OUR CodeEditor

@@ -16,8 +16,14 @@ export default function ProblemTemplate() {
   const [userCode, setUserCode] = useState(problem?.starterCode || "");
   const [runOutput, setRunOutput] = useState("");
   const [submitOutput, setSubmitOutput] = useState("");
+  const [resetKey, setResetKey] = useState(0);
 
   const toggleChat = () => setIsChatOpen((prev) => !prev);
+
+  const handleReset = () => {
+    setUserCode(problem?.starterCode || "");
+    setResetKey((k) => k + 1);
+  };
 
   const handleDrag = useCallback((newX) => {
     const screenWidth = window.innerWidth;
@@ -34,8 +40,9 @@ export default function ProblemTemplate() {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/run`, {
         code,
-        test_cases: [],
-        title: "null",
+        test_cases: problem.testCases,
+        title: problem.meta.title,
+        method: problem.meta.method,
       });
       if (response.data.error) {
         setRunOutput(`Error:\n${response.data.error}`);
@@ -55,6 +62,7 @@ export default function ProblemTemplate() {
         code: userCode,
         test_cases: problem.testCases,
         title: problem.meta.title,
+        method: problem.meta.method,
       });
       if (response.data.error) {
         setSubmitOutput(`Error:\n${response.data.error}`);
@@ -127,10 +135,21 @@ export default function ProblemTemplate() {
         className="flex flex-col"
         style={{ width: `${100 - problemWidth}%`, height: "100vh", transition: "width 0.1s ease-in-out" }}
       >
-        <div className="px-4 py-2.5 bg-[#111] border-b border-white/5 flex items-center">
+        <div className="px-4 py-2.5 bg-[#111] border-b border-white/5 flex items-center justify-between">
           <span className="text-xs font-medium text-neutral-500">Python 3</span>
+          <button
+            onClick={handleReset}
+            title="Reset to starter code"
+            className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-neutral-300 text-sm font-medium rounded-lg transition-colors border border-white/5"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+          </button>
         </div>
         <CodeEditor
+          key={resetKey}
           starterCode={userCode}
           onCodeChange={handleCodeChange}
           onRunCode={handleRun}
