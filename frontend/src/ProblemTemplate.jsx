@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import problems from "./ProblemsData";
 import ProblemDivider from "./components/ProblemDivider";
@@ -95,12 +95,26 @@ export default function ProblemTemplate() {
     Hard: "text-red-400 bg-red-400/10 border-red-400/20",
   };
 
+  const categorySlugMap = {
+    "Arrays": "arrays",
+    "Two Pointers": "two-pointers",
+    "Sliding Window": "sliding-window",
+    "Stack": "stack",
+    "Binary Search": "binary-search",
+  };
+
   return (
     <div className="flex h-screen w-screen bg-[#0a0a0a] text-white">
       <div
         className="overflow-y-auto p-8"
         style={{ width: `${problemWidth}%`, transition: "width 0.1s ease-in-out" }}
       >
+        <Link
+          to={`/dsa/${categorySlugMap[problem.meta.category] || ""}`}
+          className="text-neutral-600 text-xs hover:text-neutral-400 transition-colors mb-5 inline-block"
+        >
+          ← {problem.meta.category}
+        </Link>
         <h1 className="text-2xl font-bold tracking-tight">{problem.meta.title}</h1>
         <div className="flex items-center gap-3 mt-2">
           <span className="text-xs text-neutral-600">{problem.meta.category}</span>

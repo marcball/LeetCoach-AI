@@ -43,9 +43,11 @@ _BLOCKED_MODULES = [
     'atexit', 'gc', 'inspect', 'ast', 'tokenize', 'dis',
 ]
 
-# Minimal env passed to subprocesses — excludes all secrets
+# Pass all env vars EXCEPT anything that looks like a secret (API keys, passwords, tokens).
+# Denylist approach so Windows/Linux system vars Python needs are always preserved.
+_SECRET_PATTERNS = ('KEY', 'SECRET', 'PASSWORD', 'TOKEN')
 _SAFE_ENV = {k: v for k, v in os.environ.items()
-             if k in ('PATH', 'PYTHONPATH', 'PYTHONHOME', 'HOME', 'LANG', 'LC_ALL', 'TZ')}
+             if not any(p in k.upper() for p in _SECRET_PATTERNS)}
 
 
 def _validate_code(code: str) -> None:
