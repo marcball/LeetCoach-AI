@@ -43,12 +43,6 @@ _BLOCKED_MODULES = [
     'atexit', 'gc', 'inspect', 'ast', 'tokenize', 'dis',
 ]
 
-# Pass all env vars EXCEPT anything that looks like a secret (API keys, passwords, tokens).
-# Denylist approach so Windows/Linux system vars Python needs are always preserved.
-_SECRET_PATTERNS = ('KEY', 'SECRET', 'PASSWORD', 'TOKEN')
-_SAFE_ENV = {k: v for k, v in os.environ.items()
-             if not any(p in k.upper() for p in _SECRET_PATTERNS)}
-
 
 def _validate_code(code: str) -> None:
     """Raise HTTPException if code contains dangerous imports or builtins."""
@@ -151,7 +145,6 @@ def run_code(request: CodeRequest):
             capture_output=True,
             text=True,
             timeout=5,
-            env=_SAFE_ENV,
         )
 
         return {"output": process.stdout, "error": process.stderr}
@@ -190,7 +183,6 @@ print(sol.{request.method}(*{inputs}))
                 capture_output=True,
                 text=True,
                 timeout=5,
-                env=_SAFE_ENV,
             )
 
             actual_output = process.stdout.strip()
