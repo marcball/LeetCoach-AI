@@ -106,12 +106,12 @@ export default function ProblemTemplate() {
   return (
     <div className="flex h-screen w-screen bg-[#0a0a0a] text-white">
       <div
-        className="overflow-y-auto p-8"
+        className="overflow-y-auto px-8 pt-4 pb-8"
         style={{ width: `${problemWidth}%`, transition: "width 0.1s ease-in-out" }}
       >
         <Link
           to={`/dsa/${categorySlugMap[problem.meta.category] || ""}`}
-          className="text-neutral-600 text-xs hover:text-neutral-400 transition-colors mb-5 inline-block"
+          className="text-neutral-600 text-xs hover:text-neutral-400 transition-colors mb-4 inline-block"
         >
           ← {problem.meta.category}
         </Link>
