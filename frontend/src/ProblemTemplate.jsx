@@ -68,6 +68,12 @@ export default function ProblemTemplate() {
         setSubmitOutput(`Error:\n${response.data.error}`);
       } else {
         setSubmitOutput(response.data.output || "No output returned.");
+        if (response.data.success) {
+          const existing = JSON.parse(localStorage.getItem("leetcoach_completed") || "[]");
+          if (!existing.includes(problemID)) {
+            localStorage.setItem("leetcoach_completed", JSON.stringify([...existing, problemID]));
+          }
+        }
       }
     } catch (error) {
       console.error("Submit Error:", error);

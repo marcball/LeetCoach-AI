@@ -37,7 +37,7 @@ export default function App() {
               Get hints, not answers — learn to think like an engineer.
             </p>
 
-            <Link to="/data_structures" className="mt-7">
+            <Link to="/dsa" className="mt-7">
               <button className="inline-flex items-center gap-2 bg-[#FFD60A] hover:bg-[#e6c000] hover:scale-105 hover:shadow-[0_0_28px_rgba(255,214,10,0.4)] text-black font-bold py-3.5 px-9 rounded-full text-sm transition-all duration-200">
                 Get Started
                 <span className="text-base leading-none">→</span>

@@ -3,23 +3,29 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import subprocess
 import sys
+import re
 import openai
 from openai import OpenAI
 import os
 from typing import List, Dict, Any
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 class CodeRequest(BaseModel):
     code: str
     test_cases: List[Dict[str, Any]]
     title: str
-    method: str = "twoSum"  # function name to call on Solution(), e.g. "twoSum", "maxProfit"
+    method: str = "twoSum"
 
-# Add CORS middleware: gives React access to the backend.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow requests from React
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,7 +33,43 @@ app.add_middleware(
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# ── Security ──────────────────────────────────────────────────────────────────
+
+# Modules that could leak secrets or damage the server
+_BLOCKED_MODULES = [
+    'os', 'sys', 'subprocess', 'socket', 'requests', 'urllib', 'http',
+    'shutil', 'pathlib', 'glob', 'tempfile', 'signal', 'ctypes',
+    'multiprocessing', 'threading', 'asyncio', 'importlib', 'pty',
+    'atexit', 'gc', 'inspect', 'ast', 'tokenize', 'dis',
+]
+
+# Minimal env passed to subprocesses — excludes all secrets
+_SAFE_ENV = {k: v for k, v in os.environ.items()
+             if k in ('PATH', 'PYTHONPATH', 'PYTHONHOME', 'HOME', 'LANG', 'LC_ALL', 'TZ')}
+
+
+def _validate_code(code: str) -> None:
+    """Raise HTTPException if code contains dangerous imports or builtins."""
+    for mod in _BLOCKED_MODULES:
+        if re.search(rf'\bimport\s+{re.escape(mod)}\b', code) or \
+           re.search(rf'\bfrom\s+{re.escape(mod)}\b', code):
+            raise HTTPException(status_code=400, detail=f"Import of '{mod}' is not permitted.")
+    for pattern, label in [
+        (r'\b__import__\s*\(', '__import__'),
+        (r'\beval\s*\(', 'eval'),
+        (r'\bexec\s*\(', 'exec'),
+        (r'\bopen\s*\(', 'open'),
+        (r'\bcompile\s*\(', 'compile'),
+        (r'\bbreakpoint\s*\(', 'breakpoint'),
+    ]:
+        if re.search(pattern, code):
+            raise HTTPException(status_code=400, detail=f"Use of '{label}' is not permitted.")
+
+
+# ── Endpoints ────────────────────────────────────────────────────────────────
+
 @app.post("/analyze")
+@limiter.limit("15/minute")
 async def analyze_code(request: Request):
     body = await request.json()
     user_code = body.get("userCode", "")
@@ -78,28 +120,26 @@ async def analyze_code(request: Request):
 
     try:
         client = OpenAI()
-        
         response = client.chat.completions.create(
             model="gpt-4o",
-            messages=conversation
+            messages=conversation,
+            max_tokens=500
         )
-
         response_dict = response.model_dump()
         ai_response = response_dict['choices'][0]['message']['content']
         return {"response": ai_response}
 
-
     except Exception as e:
-        return { "error": str(e) }
-    
+        return {"error": str(e)}
+
 
 @app.post("/run")
 def run_code(request: CodeRequest):
+    _validate_code(request.code)
+
     try:
-        # Run Python code safely inside of a subprocess
         code_to_run = request.code
 
-        # Auto-call the solution with the first test case so print statements and return value show up
         if request.test_cases:
             inputs = request.test_cases[0]["input"]
             code_to_run += f"\n\nsol = Solution()\nresult = sol.{request.method}(*{inputs})\nif result is not None: print(result)"
@@ -108,7 +148,8 @@ def run_code(request: CodeRequest):
             [sys.executable, "-c", code_to_run],
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=5,
+            env=_SAFE_ENV,
         )
 
         return {"output": process.stdout, "error": process.stderr}
@@ -119,19 +160,17 @@ def run_code(request: CodeRequest):
     except Exception as e:
         raise HTTPException(status_code=102, detail=f"Internal Server Error: {e}")
 
+
 @app.post("/submit")
 def submit_code(request: CodeRequest):
-    
-    # Receive the test cases from frontend
-    test_cases = request.test_cases  
-    title = request.title.upper()
+    _validate_code(request.code)
+
+    test_cases = request.test_cases
 
     try:
         passed = 0
         total = len(test_cases)
         results = []
-
-        #submitting debug log here
 
         for case in test_cases:
             inputs = case["input"]
@@ -144,15 +183,12 @@ sol = Solution()
 print(sol.{request.method}(*{inputs}))
 """
 
-
-            
-            print('running user code:', user_code) #debug log
-            
             process = subprocess.run(
                 [sys.executable, "-c", user_code],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
+                env=_SAFE_ENV,
             )
 
             actual_output = process.stdout.strip()
@@ -163,17 +199,12 @@ print(sol.{request.method}(*{inputs}))
             else:
                 results.append(f"❌ Test failed for input {case['input']}. Expected {expected_output}, got {actual_output}")
 
-        # Calculate percent:
-        percentage = round((passed / total) * 100, 2)
-
-
-        # Final Results Summary
         if passed == total:
-            final_message = f"✅ GREAT JOB! ✅ {title} COMPLETED {passed}/{total} TEST CASES PASSED! ({percentage}%)!"
+            final_message = f"✅ Congratulations, you've successfully completed: {request.title}!"
         else:
-            final_message = f"❌ FAILED - LOCK IN! ❌{passed}/{total} ({percentage}) test cases passed." #Do passed/total percent as well.
+            final_message = f"Not quite — {passed}/{total} test cases passed. Keep going!"
 
-        return {"output": "\n".join(results) + "\n" + final_message}
+        return {"output": "\n".join(results) + "\n" + final_message, "success": passed == total}
 
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=101, detail="⏳ CODE TIMED OUT 5 SECONDS - MAKE IT FASTER! ⏳")

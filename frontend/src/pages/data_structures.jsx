@@ -2,18 +2,11 @@ import { Link } from "react-router-dom";
 import Banner from "../components/Banner";
 
 const categories = [
-  {
-    name: "Arrays & Hashing",
-    icon: "▦",
-    problems: 1,
-    difficulty: "Easy",
-    active: true,
-    link: "/problems/python/twosum",
-  },
-  { name: "Two Pointers", icon: "⇆", problems: 1, difficulty: "Easy", active: true, link: "/problems/python/validpalindrome" },
-  { name: "Sliding Window", icon: "⊡", problems: 1, difficulty: "Easy", active: true, link: "/problems/python/buysellstock" },
-  { name: "Stack", icon: "⊟", problems: 0, difficulty: "Easy", active: false },
-  { name: "Binary Search", icon: "⌖", problems: 0, difficulty: "Easy", active: false },
+  { name: "Arrays & Hashing", icon: "▦", problems: 9, difficulty: "Easy", active: true, link: "/dsa/arrays" },
+  { name: "Two Pointers", icon: "⇆", problems: 3, difficulty: "Easy", active: true, link: "/dsa/two-pointers" },
+  { name: "Sliding Window", icon: "⊡", problems: 4, difficulty: "Easy", active: true, link: "/dsa/sliding-window" },
+  { name: "Stack", icon: "⊟", problems: 5, difficulty: "Easy", active: true, link: "/dsa/stack" },
+  { name: "Binary Search", icon: "⌖", problems: 4, difficulty: "Easy", active: true, link: "/dsa/binary-search" },
   { name: "Linked List", icon: "⊸", problems: 0, difficulty: "Medium", active: false },
   { name: "Trees / BST", icon: "⑂", problems: 0, difficulty: "Medium", active: false },
   { name: "Graphs / DFS / BFS", icon: "◎", problems: 0, difficulty: "Hard", active: false },
