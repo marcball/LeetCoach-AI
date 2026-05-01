@@ -9,6 +9,8 @@ const categoryConfig = {
   "sliding-window": { name: "Sliding Window", filter: "Sliding Window" },
   stack: { name: "Stack", filter: "Stack" },
   "binary-search": { name: "Binary Search", filter: "Binary Search" },
+  "linked-list": { name: "Linked List", filter: "Linked List" },
+  trees: { name: "Trees / BST", filter: "Trees" },
 };
 
 const difficultyStyle = {
@@ -70,7 +72,7 @@ export default function CategoryPage() {
 
         <div className="flex flex-col gap-2">
           {categoryProblems.map(([id, problem]) => (
-            <Link key={id} to={`/problems/python/${id}`}>
+            <Link key={id} to={`/dsa/${categorySlug}/${id}`}>
               <div className="flex items-center justify-between px-5 py-4 rounded-xl border border-white/[0.06] bg-[#0f0f0f] hover:border-[#FFD60A]/30 hover:bg-[#111] transition-all duration-150 cursor-pointer">
                 <div className="flex items-center gap-3">
                   <Checkbox done={completed.has(id)} />

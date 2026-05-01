@@ -7,8 +7,8 @@ import CodeEditor from "./components/CodeEditor";
 import LeetCoachChatWindow from "./components/LeetCoachChatWindow";
 
 export default function ProblemTemplate() {
-  const { topic, problemID } = useParams();
-  const problem = problems[topic]?.[problemID];
+  const { categorySlug, problemID } = useParams();
+  const problem = problems.python?.[problemID];
 
   // All hooks must be declared before any conditional return
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -35,11 +35,14 @@ export default function ProblemTemplate() {
 
   const handleCodeChange = (newCode) => setUserCode(newCode);
 
+  const buildFullCode = (code) =>
+    [problem.helperCode, code, problem.wrapCode].filter(Boolean).join("\n\n");
+
   const handleRun = async (code) => {
     setRunOutput("Running...");
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/run`, {
-        code,
+        code: buildFullCode(code),
         test_cases: problem.testCases,
         title: problem.meta.title,
         method: problem.meta.method,
@@ -59,7 +62,7 @@ export default function ProblemTemplate() {
     setSubmitOutput("Submitting...");
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/submit`, {
-        code: userCode,
+        code: buildFullCode(userCode),
         test_cases: problem.testCases,
         title: problem.meta.title,
         method: problem.meta.method,
@@ -101,6 +104,8 @@ export default function ProblemTemplate() {
     "Sliding Window": "sliding-window",
     "Stack": "stack",
     "Binary Search": "binary-search",
+    "Linked List": "linked-list",
+    "Trees": "trees",
   };
 
   return (

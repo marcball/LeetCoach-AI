@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/" element={<App />} />
         <Route path="/dsa" element={<DSAPage />} />
         <Route path="/dsa/:categorySlug" element={<CategoryPage />} />
-        <Route path="/problems/:topic/:problemID" element={<ProblemTemplate />} />
+        <Route path="/dsa/:categorySlug/:problemID" element={<ProblemTemplate />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
